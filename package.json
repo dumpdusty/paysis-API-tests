@@ -1,7 +1,7 @@
 {
   "name": "paysis-tests",
   "version": "1.0.0",
-  "description": "API tests for Paysis project",
+  "description": "API tests for simple CRM project",
   "scripts": {
     "start": "node index.js",
     "test": "mocha --config .mocharc.js"

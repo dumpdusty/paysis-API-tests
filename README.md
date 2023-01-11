@@ -1,1 +1,1 @@
-* This is a project with simple API server for testing some API calls
+* This is a project with simple CRM server for testing some API calls
