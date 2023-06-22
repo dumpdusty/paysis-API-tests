@@ -2,7 +2,7 @@ import { expect } from 'chai'
 import AuthHelper from "../helpers/auth.helper"
 
 describe('Auth', function() {
-    describe('Successful login', function(){
+    describe.only('Successful login', function(){
         let authHelper = new AuthHelper()
 
         before(async function(){
