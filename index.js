@@ -10,6 +10,7 @@ const credentials = {
 };
 
 let data = {
+    success: true,
     users: [],
     transactions: [],
     minimumAmount: +process.env.INITIAL_AMOUNT,
@@ -76,7 +77,7 @@ app.post('/auth', function (req, res) {
             if (!('token' in credentials)) {
                 credentials.token = uuid()
             }
-            res.status(200).send({'token': credentials.token});
+            res.status(200).send({'message': 'Gongrats! You are logged in!', 'success': true, 'token': credentials.token});
         } else {
             res.status(404).send({'message': 'Wrong login or password.'});
         }
