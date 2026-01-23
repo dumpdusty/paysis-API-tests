@@ -71,7 +71,6 @@ describe('Server configuration', function(){
             //"patch server configuration" request
             await configHelper.patch(numEn, inAm)
             result = configHelper.response
-            console.log(result.body)
 
             //"get updated server configuration" request
             await configHelper.get()

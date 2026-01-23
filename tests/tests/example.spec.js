@@ -8,7 +8,7 @@ describe('Operations with numbers', function () {
       expect(a + b).to.eq(11)
     });
 
-    it('subtruction works properly', function (){
+    it('subtraction works properly', function (){
         expect (a-b).to.eq(-3)
     })
 })
