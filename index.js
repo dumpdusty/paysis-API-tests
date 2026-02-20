@@ -53,6 +53,15 @@ function findTransaction(id) {
     return false;
 }
 
+function findUserByEmail(email) {
+    for (const entry of data.users) {
+        if (email === entry.email) {
+            return data.users.indexOf(entry)
+        }
+    }
+    return false;
+}
+
 function userHasEnoughMoney(index, amount) {
     return data.users[index].amount >= amount;
 }
@@ -94,8 +103,45 @@ app.post('/users', function (req, res) {
         res.status(400).send({'message': 'Maximum number of users reached.'});
         return;
     }
+    
+    const body = req.body;
+    const {firstName, lastName, email} = body;
+    
+    // Validate name and surname
+    if (!firstName || typeof firstName !== 'string' || firstName.trim().length === 0) {
+        res.status(400).send({'message': 'First name is required and must be a non-empty string.'});
+        return;
+    }
+    
+    if (!lastName || typeof lastName !== 'string' || lastName.trim().length === 0) {
+        res.status(400).send({'message': 'Last name is required and must be a non-empty string.'});
+        return;
+    }
+    
+    // Validate email
+    if (!email || typeof email !== 'string' || email.trim().length === 0) {
+        res.status(400).send({'message': 'Email is required and must be a non-empty string.'});
+        return;
+    }
+    
+    // Simple email regex validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+        res.status(400).send({'message': 'Email format is invalid.'});
+        return;
+    }
+    
+    // Check email uniqueness
+    if (findUserByEmail(email.trim()) !== false) {
+        res.status(400).send({'message': 'Email already exists. Please use a different email.'});
+        return;
+    }
+    
     const newUser = {
         id: uuid(),
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        email: email.trim().toLowerCase(),
         amount: data.minimumAmount
     };
     data.users.push(newUser);
