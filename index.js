@@ -21,16 +21,24 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 function isAuthValid(req, res) {
-    const token = req.header('Authorization');
-    if (token) {
-        if (token.includes(credentials.token)) {
+    const authHeader = req.header('Authorization');
+    if (authHeader) {
+        let token;
+        // Support both "Bearer token" and just "token" formats
+        if (authHeader.startsWith('Bearer ')) {
+            token = authHeader.substring(7); // Remove "Bearer " prefix
+        } else {
+            token = authHeader; // Use the whole header value
+        }
+        
+        if (token === credentials.token) {
             return true;
         } else {
             res.status(400).send({'message': 'Wrong auth token.'});
             return false;
         }
     } else {
-        res.status(404).send({'message': 'Unauthorized.'});
+        res.status(401).send({'message': 'Unauthorized. Token required in Authorization header.'});
         return false;
     }
 }
