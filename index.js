@@ -62,6 +62,20 @@ function findUserByEmail(email) {
     return false;
 }
 
+function getUserInfo(id) {
+    const index = findUser(id);
+    if (typeof (index) === 'number') {
+        const user = data.users[index];
+        return {
+            id: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email
+        };
+    }
+    return null;
+}
+
 function userHasEnoughMoney(index, amount) {
     return data.users[index].amount >= amount;
 }
@@ -210,10 +224,12 @@ app.post('/transactions', function (req, res) {
         return;
     }
     transferMoney(indexFrom, indexTo, amount);
+    const fromUser = getUserInfo(from);
+    const toUser = getUserInfo(to);
     const newTransaction = {
         id: uuid(),
-        from: from,
-        to: to,
+        from: fromUser,
+        to: toUser,
         amount: amount
     }
     data.transactions.push(newTransaction);
@@ -230,12 +246,13 @@ app.delete('/transactions', function (req, res) {
             return;
         }
         const transaction = data.transactions[indexTransaction];
-        const indexFrom = findUser(transaction.from);
+        
+        const indexFrom = findUser(transaction.from.id);
         if (typeof (indexFrom) !== 'number') {
             res.status(400).send({'message': 'Sender doesn\'t exist anymore.'});
             return;
         }
-        const indexTo = findUser(transaction.to);
+        const indexTo = findUser(transaction.to.id);
         if (typeof (indexTo) !== 'number') {
             res.status(400).send({'message': 'Receiver doesn\'t exist anymore.'});
             return;
