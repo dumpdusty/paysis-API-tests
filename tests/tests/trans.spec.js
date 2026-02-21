@@ -109,10 +109,11 @@ describe('Positive transactions tests', function (){
         })
 
         it('userFrom in transaction response correspond to created userFrom', function () {
-            expect(transId.body.from).to.eq(userFrom.id)
+            expect(transId.body.from.id).to.eq(userFrom.id)
         })
+         
         it('userTo in transaction response correspond to created userTo', function () {
-            expect(transId.body.to).to.eq(userTo.id)
+            expect(transId.body.to.id).to.eq(userTo.id)
         })
 
 

@@ -4,7 +4,8 @@
   "description": "API tests for simple CRM project",
   "scripts": {
     "start": "node index.js",
-    "test": "mocha --config .mocharc.js"
+    "test": "mocha --config .mocharc.js",
+    "single": "npx mocha --config .mocharc.js tests/tests/users.spec.js"
   },
   "keywords": [],
   "author": "Dusty Dump",
