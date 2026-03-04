@@ -1,14 +1,17 @@
-import { expect } from 'chai'
+// import { expect } from 'chai'
 
 
-describe('Operations with numbers', function () {
-    const a = 4
-    const b = 7
-    it('addition works properly', function () {
-      expect(a + b).to.eq(11)
-    });
+// describe('Operations with numbers', function () {
+//     const a = 4
+//     const b = 7
+//     it('addition works properly', function () {
+//       expect(a + b).to.eq(11)
+//     });
 
-    it('subtraction works properly', function (){
-        expect (a-b).to.eq(-3)
-    })
-})
+//     it('subtraction works properly', function (){
+//         expect (a-b).to.eq(-3)
+//     })
+// })
+
+
+

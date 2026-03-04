@@ -85,7 +85,7 @@ function getUserInfo(id) {
 }
 
 function userHasEnoughMoney(index, amount) {
-    return data.users[index].amount >= amount;
+    return data.users[index].amount <= amount;
 }
 
 function isAmountValid(amount) {
@@ -93,7 +93,11 @@ function isAmountValid(amount) {
 }
 
 function isAmountNegative(amount) {
-    return amount >= 0;
+    return amount < 0;
+}
+
+function isAmountZero(amount) {
+    return amount === 0;
 }
 
 function transferMoney(indexFrom, indexTo, amount) {
@@ -178,7 +182,7 @@ app.delete('/users', function (req, res) {
             data.users.splice(index, 1);
             res.status(200).send({'message': 'User deleted.'});
         } else {
-            res.status(400).send({'message': 'No user found.'});
+            res.status(404).send({'message': 'No user found.'});
         }
     }
 });
@@ -191,7 +195,7 @@ app.get('/users', function (req, res) {
             if (typeof (index) === 'number') {
                 res.status(200).send(data.users[index]);
             } else {
-                res.status(400).send({'message': 'No user found.'})
+                res.status(404).send({'message': 'No user found.'})
             }
         } else {
             res.status(200).send(data.users);
@@ -211,23 +215,27 @@ app.post('/transactions', function (req, res) {
     const {from, to, amount} = body;
     const indexFrom = findUser(from);
     if (typeof (indexFrom) !== 'number') {
-        res.status(400).send({'message': 'Sender not found.'});
+        res.status(404).send({'message': 'Sender not found.'});
         return;
     }
     const indexTo = findUser(to);
     if (typeof (indexTo) !== 'number') {
-        res.status(400).send({'message': 'Receiver not found.'});
+        res.status(404).send({'message': 'Receiver not found.'});
         return;
     }
     if (!isAmountValid(amount)) {
         res.status(400).send({'message': 'Invalid amount to send.'});
         return;
     }
-    if (!isAmountNegative(amount)) {
+    if (isAmountNegative(amount)) {
         res.status(400).send({'message': 'Amount should be positive number.'})
         return;
     }
-    if (!userHasEnoughMoney(indexFrom, amount)) {
+    if (isAmountZero(amount)) {
+        res.status(400).send({'message': 'Amount should be greater than zero.'})
+        return;
+    }
+    if (userHasEnoughMoney(indexFrom, amount)) {
         res.status(400).send({'message': 'Sender does not have enough money.'});
         return;
     }
@@ -250,19 +258,19 @@ app.delete('/transactions', function (req, res) {
         const id = body.id;
         const indexTransaction = findTransaction(id);
         if (typeof (indexTransaction) !== 'number') {
-            res.status(400).send({'message': 'Transaction not found.'});
+            res.status(404).send({'message': 'Transaction not found.'});
             return;
         }
         const transaction = data.transactions[indexTransaction];
         
         const indexFrom = findUser(transaction.from.id);
         if (typeof (indexFrom) !== 'number') {
-            res.status(400).send({'message': 'Sender doesn\'t exist anymore.'});
+            res.status(404).send({'message': 'Sender doesn\'t exist anymore.'});
             return;
         }
         const indexTo = findUser(transaction.to.id);
         if (typeof (indexTo) !== 'number') {
-            res.status(400).send({'message': 'Receiver doesn\'t exist anymore.'});
+            res.status(404).send({'message': 'Receiver doesn\'t exist anymore.'});
             return;
         }
         transferMoney(indexTo, indexFrom, transaction.amount);
@@ -279,7 +287,7 @@ app.get('/transactions', function (req, res) {
             if (typeof (index) === 'number') {
                 res.status(200).send(data.transactions[index]);
             } else {
-                res.status(400).send({'message': 'No transaction found.'})
+                res.status(404).send({'message': 'No transaction found.'})
             }
         } else {
             res.status(200).send(data.transactions);
