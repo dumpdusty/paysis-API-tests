@@ -131,23 +131,29 @@ app.post('/users', function (req, res) {
     }
     
     const body = req.body;
-    const {firstName, lastName, email} = body;
+    const { firstName, lastName, email } = body;
     
-    // Validate name and surname
-    if (!firstName || typeof firstName !== 'string' || firstName.trim().length === 0) {
-        res.status(400).send({'message': 'First name is required and must be a non-empty string.'});
+    // Verify request body exists
+    if (!body || Object.keys(body).length === 0) {
+        res.status(400).send({'message': 'Request body is required with firstName, lastName, and email values.'});
         return;
     }
     
-    if (!lastName || typeof lastName !== 'string' || lastName.trim().length === 0) {
-        res.status(400).send({'message': 'Last name is required and must be a non-empty string.'});
-        return;
-    }
-    
-    // Validate email
-    if (!email || typeof email !== 'string' || email.trim().length === 0) {
-        res.status(400).send({'message': 'Email is required and must be a non-empty string.'});
-        return;
+
+    // Validate request body data types
+    const fields = [
+        { value: firstName, name: 'First name' },
+        { value: lastName, name: 'Last name' },
+        { value: email, name: 'Email' },
+        ];
+
+    const invalid = fields.find(({ value }) => 
+    !value || typeof value !== 'string' || value.trim().length === 0
+    );
+
+    if (invalid) {
+    res.status(400).send({ 'message': `${invalid.name} is required and must be a non-empty string.` });
+    return;
     }
     
     // Simple email regex validation
@@ -313,7 +319,7 @@ app.patch('/config', function (req, res) {
             number_of_entries: data.numberOfEntries,
             initial_amount: data.minimumAmount
         }
-        if (numberOfEntries) {
+        if (numberOfEntries !== undefined) {
             if (!isAmountValid(numberOfEntries)) {
                 res.status(400).send({'message': 'Invalid number of entries.'});
                 return;
@@ -324,18 +330,24 @@ app.patch('/config', function (req, res) {
                 }
                 config.number_of_entries = numberOfEntries;
             }
+        } else {
+            res.status(400).send({ 'message': 'Number of entries is required.' });
+            return;
         }
-        if (minimalAmount) {
+        if (minimalAmount !== undefined) {
             if (!isAmountValid(minimalAmount)) {
                 res.status(400).send({'message': 'Invalid minimal amount.'});
                 return;
             } else {
-                if (minimalAmount < 0) {
+                if (minimalAmount <= 0) {
                     res.status(400).send({'message': 'Amount must be above zero.'});
                     return;
                 }
                 config.initial_amount = minimalAmount;
             }
+        } else {
+            res.status(400).send({ 'message': 'Minimal amount is required.' });
+            return;
         }
         data.minimumAmount = config.initial_amount;
         data.numberOfEntries = config.number_of_entries;
