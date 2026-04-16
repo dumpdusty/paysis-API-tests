@@ -293,7 +293,7 @@ app.get('/transactions', function (req, res) {
             if (typeof (index) === 'number') {
                 res.status(200).send(data.transactions[index]);
             } else {
-                res.status(404).send({'message': 'No transaction found.'})
+                res.status(404).send({'message': 'Transaction not found.'})
             }
         } else {
             res.status(200).send(data.transactions);
